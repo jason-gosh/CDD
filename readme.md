@@ -1,9 +1,15 @@
-# CDD - Change Directory dynamic
+# CDD - Change Directory Dynamic
 ---
 
 Utilidad de comando adicional para terminales linux que permite cambiar dinamicamente un directorio de forma flexible, sin necesidad de completar el nombre del directorio e incluyendo busquedas permisivas.
 
 Proyecto hecho en Rust.
+
+---
+
+An additional command-line utility for Linux terminals that allows for flexible, dynamic directory switching—without the need to type out the full directory name and including permissive search capabilities.
+
+A project built in Rust.
 
 ---
 ## ⚖️ Licencia (License)

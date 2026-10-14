@@ -12,9 +12,11 @@ fn main() {
     args.next();
 
     let Some(prefix) = args.next() else {
-        eprintln!("use: cdf <prefijo>");
+        eprintln!("use: cdf <prefix>");
         process::exit(1);
     };
+
+    eprintln!("IN {}",prefix);
 
     match search::find_directory(&prefix) {
         Some(directories) => {

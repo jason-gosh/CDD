@@ -7,11 +7,7 @@ use crate::shared::hex_console_colors;
 
 pub fn find_directory(prefix: &str) -> Option<HashSet<String>> {
     let dirs = found_and_write_similarities_dirs(prefix);
-    if dirs.len() == 0 {
-        None
-    } else {
-        Some(dirs)
-    }
+    if dirs.len() == 0 { None } else { Some(dirs) }
 }
 
 pub fn list_directories(print_dirs: bool) -> io::Result<HashSet<String>> {
@@ -19,7 +15,7 @@ pub fn list_directories(print_dirs: bool) -> io::Result<HashSet<String>> {
     let current_dir = std::env::current_dir()?;
 
     if print_dirs {
-        println!("Available directories {}:", current_dir.display());
+        eprintln!("Available directories {}:", current_dir.display());
     }
 
     for entry in fs::read_dir(current_dir)? {
@@ -33,7 +29,7 @@ pub fn list_directories(print_dirs: bool) -> io::Result<HashSet<String>> {
                 .unwrap_or_default();
             list_directories.insert(path_str.clone());
             if print_dirs {
-                print!(
+                eprint!(
                     "{} {}/ {}",
                     hex_console_colors::CYAN,
                     path_str,
@@ -42,11 +38,12 @@ pub fn list_directories(print_dirs: bool) -> io::Result<HashSet<String>> {
             }
         }
     }
-    println!();
+    eprintln!();
 
     Ok(list_directories)
 }
 
+#[allow(unused)]
 pub fn count_frecuency_chars(text: &str) -> HashMap<char, usize> {
     let mut frequency_map = HashMap::new();
 
@@ -64,7 +61,7 @@ pub fn count_frecuency_chars(text: &str) -> HashMap<char, usize> {
         .map(|(char, count)| format!("{}: {}", char, count))
         .collect();
 
-    println!("{}", result.join(", "));
+    eprintln!("{}", result.join(", "));
 
     frequency_map
 }
@@ -108,10 +105,9 @@ fn is_text_similar_to_set(text: &str, set: HashSet<char>) -> bool {
     }
 }
 
-fn is_text_exactly_to_set(text: &str, set: HashSet<char>) -> bool{
+fn is_text_exactly_to_set(text: &str, set: HashSet<char>) -> bool {
     let t_size = text.chars().count();
     let s_size = set.len();
-    
 
     if s_size == t_size && set.iter().all(|c| text.contains(*c)) {
         true
@@ -120,21 +116,21 @@ fn is_text_exactly_to_set(text: &str, set: HashSet<char>) -> bool{
     }
 }
 
-pub fn found_and_write_similarities_dirs(prefix: &str) -> HashSet<String>{
+pub fn found_and_write_similarities_dirs(prefix: &str) -> HashSet<String> {
     let mut similar_dirs = HashSet::new();
     let directories = list_directories(true);
     let pharase = to_hashset_chars_unsensible(prefix);
     match directories {
         Ok(dirs) => {
-            println!("directories founds.");
+            eprintln!("directories founds.");
             for dir in dirs {
                 if is_text_similar_to_set(&dir, pharase.clone()) {
                     similar_dirs.insert(dir.clone());
                 }
-                if is_text_exactly_to_set(&dir, pharase.clone()){
+                if is_text_exactly_to_set(&dir, pharase.clone()) {
                     similar_dirs.clear();
                     similar_dirs.insert(dir.clone());
-                    
+
                     return similar_dirs;
                 }
             }

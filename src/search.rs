@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::fs;
 use std::io;
+use std::ops::Add;
 
 use crate::shared::hex_console_colors;
 
@@ -67,7 +68,7 @@ pub fn count_frecuency_chars(text: &str) -> HashMap<char, usize> {
 }
 
 // used on count_frecuency_chars_unsensible
-fn normalize_chars(c: char) -> char {
+fn normalize_char(c: char) -> char {
     let char_lower = c.to_lowercase().next().unwrap_or(c);
 
     match char_lower {
@@ -76,8 +77,34 @@ fn normalize_chars(c: char) -> char {
         'í' | 'ì' | 'ï' | 'î' => 'i',
         'ó' | 'ò' | 'ö' | 'ô' => 'o',
         'ú' | 'ù' | 'ü' | 'û' => 'u',
+
+        'ç' | 'ć' | 'č' | 'ĉ' | 'ċ' => 'c',
+        'ď' | 'đ' => 'd' ,
+        'ĝ' | 'ğ' | 'ġ' | 'ģ' => 'g',
+        'ĥ' | 'ħ' => 'h',
+        'ĵ' => 'j',
+        'ķ' | 'ĸ' => 'k',
+        'ĺ' | 'ļ' | 'ľ' | 'ŀ' | 'ł' => 'l',
+        'ñ' | 'ń' | 'ņ' | 'ň' | 'ŉ' | 'ŋ' => 'n',
+        'ŕ' | 'ŗ' | 'ř' => 'r',
+        'ś' | 'ŝ' | 'ş' | 'š' | 'ș' => 's',
+        'ţ' | 'ť' | 'ŧ' | 'ț' => 't',
+        'ŵ' => 'w',
+        'ý' | 'ÿ' | 'ŷ' => 'y',
+        'ź' | 'ż' | 'ž' => 'z',
         _ => char_lower,
     }
+}
+
+fn normalize_text(t: &str) -> String {
+    let mut text_lower = String::new();
+    for c in t.chars() {
+        text_lower.insert(
+            text_lower.chars().count(), 
+            normalize_char(c)
+        );
+    }
+    text_lower
 }
 
 fn to_hashset_chars_unsensible(text: &str) -> HashSet<char> {
@@ -85,12 +112,23 @@ fn to_hashset_chars_unsensible(text: &str) -> HashSet<char> {
 
     for c in text.chars() {
         if !c.is_whitespace() && !c.is_ascii_punctuation() {
-            let c_normalized = normalize_chars(c);
+            let c_normalized = normalize_char(c);
             chars_set.insert(c_normalized);
         }
     }
 
     chars_set
+}
+
+fn to_hashset_strings_unsensible(texts: &HashSet<String>) -> HashSet<String>{
+    let mut strings_set = HashSet::new();
+
+    for text in texts {
+        strings_set.insert(normalize_text(text));
+     
+    }
+
+    strings_set
 }
 
 fn is_text_similar_to_set(text: &str, set: HashSet<char>) -> bool {
@@ -120,12 +158,14 @@ pub fn found_and_write_similarities_dirs(prefix: &str) -> HashSet<String> {
     let mut similar_dirs = HashSet::new();
     let directories = list_directories(true);
     let pharase = to_hashset_chars_unsensible(prefix);
+
     match directories {
         Ok(dirs) => {
             eprintln!("directories founds.");
-            for dir in dirs {
+            for dir in to_hashset_strings_unsensible(&dirs) {
                 if is_text_similar_to_set(&dir, pharase.clone()) {
                     similar_dirs.insert(dir.clone());
+                   
                 }
                 if is_text_exactly_to_set(&dir, pharase.clone()) {
                     similar_dirs.clear();

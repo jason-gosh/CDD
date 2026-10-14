@@ -12,7 +12,7 @@ fn main() {
     args.next();
 
     let Some(prefix) = args.next() else {
-        eprintln!("use: cdf <prefix>");
+        eprintln!("use: cdd <some>");
         process::exit(1);
     };
 
